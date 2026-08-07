@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Discord Lite</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+</head>
+<body>
+    <header>
+        <h1>Discord Lite</h1>
+        <img src="">
+    </header>
+
+    <div id="messages">
+        <span id="infobox"></span>
+        <ul id="messagebox"></ul>
+    </div>
+    <footer>
+        <form>
+            <label>
+                Message
+                <input type="text" placeholder="Enter your message here" id="message_input" required>
+            </label>
+            <button id="send">Send</button>
+        </form>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
