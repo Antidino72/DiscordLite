@@ -1,6 +1,7 @@
 async function handleCredentialResponse(response) {
 
     const userData = parseJwt(response.credential)
+    console.log(userData.picture)
     const res = await fetch('/api/login', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},

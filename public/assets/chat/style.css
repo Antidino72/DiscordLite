@@ -1,0 +1,257 @@
+/* ── Reset ── */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ── Tokens ── */
+:root {
+    --bg-primary:    #1e1f22;
+    --bg-secondary:  #2b2d31;
+    --bg-tertiary:   #313338;
+    --bg-input:      #383a40;
+    --accent:        #5865f2;
+    --accent-hover:  #4752c4;
+    --text-primary:  #dbdee1;
+    --text-muted:    #949ba4;
+    --text-header:   #f2f3f5;
+    --bubble-sent:   #5865f2;
+    --bubble-recv:   #2b2d31;
+    --border:        #1e1f22;
+    --radius-msg:    16px;
+    --header-h:      56px;
+    --footer-h:      72px;
+    --font:          'Inter', system-ui, sans-serif;
+}
+
+/* ── Base ── */
+html, body {
+    height: 100%;
+    font-family: var(--font);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+/* ── Header ── */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-h);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    z-index: 100;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.server-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+}
+
+.header-info h1 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-header);
+    line-height: 1.2;
+}
+
+.header-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.online-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #23a55a;
+    display: inline-block;
+}
+
+/* ── Messages zone ── */
+#messages {
+    position: fixed;
+    top: var(--header-h);
+    bottom: var(--footer-h);
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+    padding: 16px 0 8px;
+    display: flex;
+    flex-direction: column;
+    scroll-behavior: smooth;
+}
+
+/* Scrollbar */
+#messages::-webkit-scrollbar { width: 4px; }
+#messages::-webkit-scrollbar-track { background: transparent; }
+#messages::-webkit-scrollbar-thumb { background: var(--bg-input); border-radius: 4px; }
+
+/* ── Typing indicator ── */
+#infobox {
+    display: block;
+    min-height: 18px;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 0 20px 4px;
+    order: -1; /* stays at top of flex column — messages push down */
+}
+
+/* ── Message list ── */
+ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0;
+    margin-top: auto; /* pushes messages to bottom */
+}
+
+/* ── Bubbles — keep class names exactly as script.js uses them ── */
+.message_received,
+.message_send {
+    max-width: 72%;
+    padding: 8px 14px;
+    border-radius: var(--radius-msg);
+    font-size: 14px;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.message_received {
+    align-self: flex-start;
+    background: var(--bubble-recv);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-bottom-left-radius: 4px;
+    margin-left: 16px;
+    color: var(--text-primary);
+    text-align: left;
+}
+
+.message_send {
+    align-self: flex-end;
+    background: var(--bubble-sent);
+    border-bottom-right-radius: 4px;
+    margin-right: 16px;
+    color: #fff;
+    text-align: right;
+}
+
+/* ── Footer / Input bar ── */
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: var(--footer-h);
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    z-index: 100;
+}
+
+footer form {
+    width: 100%;
+    margin: 0;
+    display: flex;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: var(--bg-input);
+    border-radius: 10px;
+    padding: 0 8px 0 16px;
+    gap: 8px;
+    border: 1px solid transparent;
+    transition: border-color 0.15s;
+}
+
+.input-wrapper:focus-within {
+    border-color: var(--accent);
+}
+
+#message_input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: var(--font);
+    padding: 12px 0;
+    caret-color: var(--accent);
+}
+
+#message_input::placeholder {
+    color: var(--text-muted);
+}
+
+#send {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    transition: background 0.15s, color 0.15s;
+}
+
+#send:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+    .message_received,
+    .message_send {
+        max-width: 90%;
+    }
+}

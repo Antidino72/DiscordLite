@@ -3,30 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="assets/logo.svg" type="svg">
     <title>Discord Lite</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/chat/style.css">
+    <script src="https://kit.fontawesome.com/efbce3c669.js" crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 </head>
 <body>
-    <header>
-        <h1>Discord Lite</h1>
-        <img src="">
-    </header>
-
-    <div id="messages">
-        <span id="infobox"></span>
-        <ul id="messagebox"></ul>
+<header>
+    <div class="header-left">
+        <div class="server-icon">DL</div>
+        <div class="header-info">
+            <h1>Discord Lite</h1>
+        </div>
+        <div id="devtools-user-display" style="padding: 8px 12px; margin: 5px; background-color: rgb(240, 242, 245); border: 1px solid rgb(204, 204, 204); border-radius: 4px; font-size: 14px; font-weight: bold; color: rgb(51, 51, 51); display: inline-block;">Current User</div>
     </div>
-    <footer>
-        <form>
-            <label>
-                Message
-                <input type="text" placeholder="Enter your message here" id="message_input" required>
-            </label>
-            <button id="send">Send</button>
-        </form>
-    </footer>
-    <script src="script.js"></script>
+    <div class="header-right">
+            <span class="online-badge">
+                <span class="dot"></span>
+                En ligne
+            </span>
+    </div>
+</header>
+
+<div id="messages">
+    <span id="infobox"></span>
+    <ul id="messagebox"></ul>
+</div>
+
+<footer>
+    <form>
+        <div class="input-wrapper">
+            <input type="text" placeholder="Envoyer un message" id="message_input" required autocomplete="off">
+            <button id="send"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </form>
+</footer>
+
+<script src="assets/chat/script.js"></script>
 </body>
 </html>

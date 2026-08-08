@@ -1,0 +1,105 @@
+/* ── Reset ── */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ── Tokens (mêmes que le chat) ── */
+:root {
+    --bg-primary:   #1e1f22;
+    --bg-secondary: #2b2d31;
+    --bg-card:      #313338;
+    --accent:       #5865f2;
+    --text-primary: #dbdee1;
+    --text-muted:   #949ba4;
+    --text-header:  #f2f3f5;
+    --border:       rgba(255,255,255,0.06);
+    --font:         'Inter', system-ui, sans-serif;
+}
+
+/* ── Base ── */
+html, body {
+    height: 100%;
+    font-family: var(--font);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Card ── */
+form {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+}
+
+/* ── Logo / titre ── */
+form::before {
+    content: "DL";
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.02em;
+}
+
+form::after {
+    content: "Connecte-toi à Discord Lite";
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-header);
+    text-align: center;
+    margin-top: -12px;
+}
+
+/* ── Séparateur sous le titre ── */
+.g_id_signin {
+    margin-top: 4px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* ── Note sous le bouton ── */
+.g_id_signin::after {
+    display: none; /* pas de texte parasite */
+}
+
+/* Petit texte discret en bas de carte (optionnel, via pseudo sur #g_id_onload) */
+#g_id_onload::after {
+    content: "En continuant, tu acceptes les conditions d'utilisation.";
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 8px;
+    line-height: 1.6;
+}
+
+/* ── Responsive ── */
+@media (max-width: 440px) {
+    form {
+        border-radius: 0;
+        border: none;
+        padding: 40px 24px;
+        min-height: 100dvh;
+        justify-content: center;
+    }
+}

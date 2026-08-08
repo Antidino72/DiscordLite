@@ -117,6 +117,17 @@ app.post('/api/login', (req, res) => {
     }
 });
 
+app.get('/api/me', (req, res) => {
+    if (req.session && req.session.user) {
+        // On renvoie les infos stockées dans la session
+        res.json({
+            logged: true,
+            user: req.session.user
+        });
+    } else {
+        res.status(401).json({ logged: false, error: 'Non connecté' });
+    }
+});
 // ==========================================
 // 4. WEBSOCKET HANDLERS (Socket.io)
 // ==========================================

@@ -1,8 +1,29 @@
 const socket = io();
-let username = "DD"
+let currentUser = null;
+
+// Au chargement de la page
+async function loadUserProfile() {
+    try {
+        const response = await fetch('/api/me');
+
+        if (!response.ok) {
+            // Si pas connecté ou session expirée, retour au login
+            window.location.href = '/login';
+            return;
+        }
+
+        const data = await response.json();
+        currentUser = data.user;
+
+    } catch (error) {
+        console.error("Erreur lors de la récupération du profil :", error);
+    }
+}
+
+loadUserProfile();
 socket.on('connect', () => {
     socket.emit('login', {
-        username: username,
+        username: currentUser.username,
         user_id: socket.id,
     });
 });
@@ -16,7 +37,7 @@ button.addEventListener('click', function(e){
     e.preventDefault();
 
     const message = {
-        username : username,
+        username : currentUser.username,
         message : message_input.value
     }
     if (message.message !== ""){
@@ -30,7 +51,7 @@ button.addEventListener('click', function(e){
 })
 message_input.addEventListener('input', function(e){
     socket.emit("typing",{
-        username: username,
+        username: currentUser.username,
     })
 })
 
