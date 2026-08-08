@@ -1,5 +1,11 @@
 const socket = io();
 let currentUser = null;
+const button = document.getElementById('send');
+const messagebox = document.getElementById('messagebox');
+const message_input = document.getElementById('message_input');
+const message_div = document.getElementById('infobox');
+const user_logo = document.querySelector('.user_picture > img');
+const username_diplay = document.getElementById("user-display");
 
 // Au chargement de la page
 async function loadUserProfile() {
@@ -20,18 +26,20 @@ async function loadUserProfile() {
     }
 }
 
-loadUserProfile();
-socket.on('connect', () => {
-    socket.emit('login', {
-        username: currentUser.username,
-        user_id: socket.id,
+loadUserProfile().then(r => {
+    socket.on('connect', () => {
+        socket.emit('login', {
+            username: currentUser.username,
+            user_id: socket.id,
+        });
     });
+
+    user_logo.src = currentUser.image
+    username_diplay.textContent = currentUser.username
 });
 
-const button = document.getElementById('send');
-const messagebox = document.getElementById('messagebox');
-const message_input = document.getElementById('message_input');
-const message_div = document.getElementById('infobox');
+
+
 let typingTimeout;
 button.addEventListener('click', function(e){
     e.preventDefault();

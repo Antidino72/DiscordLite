@@ -1,21 +1,30 @@
 async function handleCredentialResponse(response) {
+    const userData = parseJwt(response.credential);
+    console.log("Photo de profil :", userData.picture);
 
-    const userData = parseJwt(response.credential)
-    console.log(userData.picture)
-    const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            google_id: userData.sub,
-            image : userData.picture,
-            username: userData.name
-        })
-    });
-    if (res.ok){
-        localStorage.setItem("token",response.credential)
-        window.location.href = "chat.html"
+    try {
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                google_id: userData.sub,
+                image: userData.picture,
+                username: userData.name
+            })
+        });
+
+        if (res.ok) {
+            // Sauvegarder le token si besoin
+            localStorage.setItem("token", response.credential);
+
+            // ✅ Rediriger vers la route racine "/" gérée par le serveur Express
+            window.location.href = "/";
+        } else {
+            console.error("Erreur serveur lors de la connexion");
+        }
+    } catch (error) {
+        console.error("Erreur réseau :", error);
     }
-
 }
 
 function parseJwt(token) {
