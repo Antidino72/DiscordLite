@@ -2,6 +2,11 @@
 
 a discord-lite make for learn *node*
 
+## Exemple
+
+![login](./screenshots/login.png)
+![chat](./screenshots/chat.png)
+
 ## Requirement
 
 - [Node.js](https://nodejs.org/)
@@ -12,5 +17,23 @@ a discord-lite make for learn *node*
 ```javascript
 npm install
 
-node index.js
+npm start
 ```
+
+## To do list
+
+* [ ]  Historique des message
+* [ ] Système de pseudo 
+* [ ] ajout du markdown
+* [ ] ajout des image et lien
+* [ ] plus d'idée
+
+## .env
+
+
+SECRET_SESSION = {a password to create session systeme}
+
+PORT  = {Your port}
+
+## Status 
+ Work in progress
