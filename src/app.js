@@ -37,3 +37,4 @@ module.exports={
 //===================================
 app.use('/',require('./routes/pages'));
 app.use('/api',require('./routes/auth'));
+app.use('/api',require('./routes/messages'));

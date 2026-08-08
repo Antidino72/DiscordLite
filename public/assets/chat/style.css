@@ -146,7 +146,7 @@ ul {
 }
 
 /* ── Bubbles — keep class names exactly as script.js uses them ── */
-.message_received,
+.message_received,.message_info,
 .message_send {
     max-width: 72%;
     padding: 8px 14px;
@@ -154,8 +154,15 @@ ul {
     font-size: 14px;
     line-height: 1.5;
     word-break: break-word;
+    content-visibility: auto;
+    contain-intrinsic-size: 0 40px;
 }
-
+.message_info{
+    align-self: flex-start;
+    margin-left: 16px;
+    color: var(--text-primary);
+    text-align: left;
+}
 .message_received {
     align-self: flex-start;
     background: var(--bubble-recv);
@@ -183,6 +190,7 @@ footer {
     width: 100%;
     height: var(--footer-h);
     background: var(--bg-tertiary);
+    flex-direction: column;
     display: flex;
     align-items: center;
     padding: 0 16px;
@@ -253,5 +261,29 @@ footer form {
     .message_received,
     .message_send {
         max-width: 90%;
+    }
+}
+/* Style du conteneur de chargement en haut du chat */
+.chat-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+    width: 100%;
+}
+
+/* Animation du cercle (Spinner) */
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    border-top-color: #5865f2; /* Couleur style Discord */
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
     }
 }

@@ -44,6 +44,7 @@ route.post('/login', (req, res) => {
 route.get('/me', (req, res) => {
     if (req.session && req.session.user) {
         // On renvoie les infos stockées dans la session
+        console.log(req.session.user)
         res.json({
             logged: true,
             user: req.session.user

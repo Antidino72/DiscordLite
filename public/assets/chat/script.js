@@ -1,19 +1,61 @@
+// ==========================================
+// 1. INITIALISATION ET VARIABLES
+// ==========================================
 const socket = io();
 let currentUser = null;
-const button = document.getElementById('send');
-const messagebox = document.getElementById('messagebox');
-const message_input = document.getElementById('message_input');
-const message_div = document.getElementById('infobox');
-const user_logo = document.querySelector('.user_picture > img');
-const username_diplay = document.getElementById("user-display");
+let typingTimeout = null;
 
-// Au chargement de la page
+const sendButton = document.getElementById('send');
+const messagebox = document.getElementById('messagebox');
+const message_scroll = document.getElementById('messages');
+const messageInput = document.getElementById('message_input');
+const infoBox = document.getElementById('infobox');
+const userLogo = document.querySelector('.user_picture > img');
+const usernameDisplay = document.getElementById('user-display');
+
+// ==========================================
+// 2. FONCTION POUR ENVOYER LE LOGIN AU SERVEUR
+// ==========================================
+function emitSocketLogin() {
+    // ⚠️ On n'envoie 'login' QUE si l'utilisateur est bien chargé ET la socket connectée
+    if (currentUser && socket.connected) {
+        socket.emit('login', {
+            username: currentUser.username,
+            socket_id: socket.id,
+            image: currentUser.image,
+            user_id: currentUser.id
+        });
+    }
+}
+
+// ==========================================
+// 3. RECUPERATION DU PROFIL ET DEMARRAGE
+// ==========================================
+function showLoader() {
+    // Vérifier s'il n'existe pas déjà
+    if (document.getElementById('chat-loader')) return;
+
+    const loaderDiv = document.createElement('div');
+    loaderDiv.id = 'chat-loader';
+    loaderDiv.className = 'chat-loader';
+    loaderDiv.innerHTML = '<div class="spinner"></div>';
+
+    // L'insérer tout en haut du messagebox
+    messagebox.insertBefore(loaderDiv, messagebox.firstChild);
+}
+
+// 2. Retirer l'indicateur de chargement
+function hideLoader() {
+    const loader = document.getElementById('chat-loader');
+    if (loader) {
+        loader.remove();
+    }
+}
 async function loadUserProfile() {
     try {
         const response = await fetch('/api/me');
 
         if (!response.ok) {
-            // Si pas connecté ou session expirée, retour au login
             window.location.href = '/login';
             return;
         }
@@ -21,73 +63,166 @@ async function loadUserProfile() {
         const data = await response.json();
         currentUser = data.user;
 
+        // Mettre à jour l'interface
+        if (userLogo) userLogo.src = currentUser.image || '/assets/default-avatar.png';
+        if (usernameDisplay) usernameDisplay.textContent = currentUser.username;
+        // 🚀 Une fois le profil chargé, on s'identifie immédiatement auprès de la socket !
+        emitSocketLogin();
+
     } catch (error) {
-        console.error("Erreur lors de la récupération du profil :", error);
+        console.error('Erreur lors de la récupération du profil :', error);
     }
 }
 
-loadUserProfile().then(r => {
-    socket.on('connect', () => {
-        socket.emit('login', {
-            username: currentUser.username,
-            user_id: socket.id,
-        });
-    });
+let oldestMessageId = null;
+let hasMoreMessages = true;
+let isLoadingHistory = false;
 
-    user_logo.src = currentUser.image
-    username_diplay.textContent = currentUser.username
+async function loadMessagesHistory() {
+    if (isLoadingHistory || !hasMoreMessages) return;
+    isLoadingHistory = true;
+
+    const isPagination = oldestMessageId !== null;
+
+    // Afficher le loader seulement si on remonte dans l'historique (pagination)
+    if (isPagination) {
+        showLoader();
+    }
+
+    const url = isPagination
+        ? `/api/messages?before=${oldestMessageId}`
+        : '/api/messages';
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const messages = data.messages;
+
+        if (messages.length < 30) {
+            hasMoreMessages = false;
+        }
+
+        if (messages.length > 0) {
+            oldestMessageId = messages[0].id;
+
+            const previousScrollHeight = messagebox.scrollHeight;
+            const fragment = document.createDocumentFragment();
+
+            messages.forEach(msg => {
+                const isMyMessage = currentUser && (String(msg.user_id) === String(currentUser.id));
+                const messageText = `${msg.username} : ${msg.content || msg.message}`;
+                const className = isMyMessage ? 'message_send' : 'message_received';
+
+                const li = createMessageElement(messageText, className);
+                fragment.appendChild(li);
+            });
+
+            if (isPagination) {
+                // Insérer les nouveaux messages juste après/à la place du loader
+                messagebox.insertBefore(fragment, messagebox.firstChild);
+
+                // Maintien du scroll fluide
+                messagebox.scrollTop = messagebox.scrollHeight - previousScrollHeight;
+            } else {
+                // Premier chargement
+                messagebox.appendChild(fragment);
+                setTimeout(() => messagebox.scrollTop = messagebox.scrollHeight, 50);
+            }
+        }
+    } catch (error) {
+        console.error("Erreur chargement messages :", error);
+    } finally {
+        // Toujours retirer le loader à la fin de la requête
+        hideLoader();
+        isLoadingHistory = false;
+    }
+}
+
+// Écouteur de scroll bidirectionnel
+message_scroll.addEventListener('scroll', async () => {
+
+    if (message_scroll.scrollTop <= 10 && hasMoreMessages) {
+        loadMessagesHistory();
+    }
+});
+loadUserProfile();
+// Lancement au démarrage
+loadMessagesHistory()
+
+
+// Ré-émettre le 'login' si la socket se déco/reco automatiquement
+socket.on('connect', () => {
+    emitSocketLogin();
 });
 
+// Lancer le chargement du profil
 
 
-let typingTimeout;
-button.addEventListener('click', function(e){
+// ==========================================
+// 4. ÉVÉNEMENTS DU DOM (ENVOI ET TYPING)
+// ==========================================
+sendButton.addEventListener('click', (e) => {
     e.preventDefault();
+    const text = messageInput.value.trim();
 
-    const message = {
-        username : currentUser.username,
-        message : message_input.value
-    }
-    if (message.message !== ""){
-        socket.emit('message_input', message);
-        message_input.value = '';
+    if (text !== '' && currentUser) {
+        socket.emit('message_input', {
+            username: currentUser.username,
+            message: text
+        });
+
+        messageInput.value = '';
         clearTimeout(typingTimeout);
-        message_div.textContent = "";
-    }else {
-        alert("Please enter a message!")
+        infoBox.textContent = '';
     }
-})
-message_input.addEventListener('input', function(e){
-    socket.emit("typing",{
-        username: currentUser.username,
-    })
-})
+});
 
-socket.on('typing',function (json){
+messageInput.addEventListener('input', () => {
+    if (currentUser) {
+        socket.emit('typing', {
+            username: currentUser.username,
+            socket_id: socket.id
+        });
+    }
+});
 
+// ==========================================
+// 5. RÉCEPTION DES MESSAGES SOCKET.IO
+// ==========================================
+function createMessageElement(content, className = '') {
+    const li = document.createElement('li');
+    li.textContent = content;
+    if (className) li.className = className;
+    return li;
+}
 
-    if (json.socket_id === socket.id) return
-    message_div.textContent = json.username +" is typing..."
+socket.on('user_connected', (data) => {
+    const li = createMessageElement(data.message, 'message_info');
+    messagebox.appendChild(li);
+});
 
+socket.on('user_left', (data) => {
+    const li = createMessageElement(data.message, 'message_info');
+    messagebox.appendChild(li);
+});
+
+socket.on('typing', (data) => {
+    if (data.socket_id === socket.id) return;
+
+    infoBox.textContent = `${data.username} est en train d'écrire...`;
     clearTimeout(typingTimeout);
-
     typingTimeout = setTimeout(() => {
-        message_div.textContent = "";
-    }, 2000);
+        infoBox.textContent = '';
+    }, 1000);
+});
 
-})
-socket.on("message_received",function (text){
-    console.log(text.user_id);
+socket.on('message_received', (data) => {
+    const messageText = `${data.username} : ${data.message}`;
+    const isMyMessage = (data.user_id === currentUser.id);
 
-        const li = document.createElement('li');
+    const messageClass = isMyMessage ? 'message_send' : 'message_received';
 
-        if (text.user_id === socket.id){
-            li.className = "message_send"
-            console.log("it's your message");
-        }else {
-            li.className = "message_received"
-        }
-        li.textContent = text.username+" : "+text.message;
-        messagebox.appendChild(li)
-
+    const li = createMessageElement(messageText, messageClass);
+    messagebox.appendChild(li);
+    messagebox.scrollTop = messagebox.scrollHeight;
 });
