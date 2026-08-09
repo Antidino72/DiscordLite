@@ -10,6 +10,7 @@ const io = require('socket.io')(http);
 require('./sockets/chat')(io)
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Set security headers for Google OAuth popups
 app.use((req, res, next) => {

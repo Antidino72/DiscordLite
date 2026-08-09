@@ -7,33 +7,37 @@
 
 /* ── Tokens ── */
 :root {
-    --bg-primary:    #1e1f22;
     --bg-secondary:  #2b2d31;
-    --bg-tertiary:   #313338;
+    --bg-primary:   #313338;
     --bg-input:      #383a40;
     --accent:        #5865f2;
-    --accent-hover:  #4752c4;
     --text-primary:  #dbdee1;
     --text-muted:    #949ba4;
     --text-header:   #f2f3f5;
     --bubble-sent:   #5865f2;
     --bubble-recv:   #2b2d31;
-    --border:        #1e1f22;
+    --border:        rgba(255,255,255,0.06);
     --radius-msg:    16px;
     --header-h:      56px;
     --footer-h:      72px;
+    --nav-w:         240px;
     --font:          'Inter', system-ui, sans-serif;
+    --font-size : 14px;
 }
 
 /* ── Base ── */
 html, body {
     height: 100%;
-    font-family: var(--font);
-    background: var(--bg-tertiary);
+    font-family: var(--font), serif;
+    background: var(--bg-primary);
     color: var(--text-primary);
     font-size: 15px;
+    overflow-x : auto;
+
     line-height: 1.5;
 }
+
+
 
 /* ── Header ── */
 header {
@@ -54,39 +58,48 @@ header {
 .header-left {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    min-width: 0;
 }
 
-.user_picture > img{
-    width: 36px;
-    height: 36px;
+.user_picture {
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
-    background: var(--accent);
-    color: #fff;
-    font-weight: 700;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
     flex-shrink: 0;
-    letter-spacing: 0.02em;
+    border: 2px solid var(--bg-input);
+}
+.user_picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .header-info h1 {
     font-size: 15px;
     font-weight: 600;
     color: var(--text-header);
-    line-height: 1.2;
+    white-space: nowrap;
 }
 
-.header-sub {
-    font-size: 12px;
-    color: var(--text-muted);
+/* Override du style inline sur #user-display */
+#user-display {
+    background: var(--bg-input) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 6px !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: var(--text-primary) !important;
+    padding: 4px 10px !important;
+    margin: 0 !important;
+    white-space: nowrap;
 }
 
 .header-right {
     display: flex;
     align-items: center;
+    gap: 12px;
 }
 
 .online-badge {
@@ -95,6 +108,7 @@ header {
     gap: 6px;
     font-size: 12px;
     color: var(--text-muted);
+    white-space: nowrap;
 }
 
 .dot {
@@ -102,10 +116,10 @@ header {
     height: 8px;
     border-radius: 50%;
     background: #23a55a;
-    display: inline-block;
+    flex-shrink: 0;
 }
 
-/* ── Messages zone ── */
+/* ── Messages ── */
 #messages {
     position: fixed;
     top: var(--header-h);
@@ -119,50 +133,29 @@ header {
     scroll-behavior: smooth;
 }
 
-/* Scrollbar */
 #messages::-webkit-scrollbar { width: 4px; }
 #messages::-webkit-scrollbar-track { background: transparent; }
 #messages::-webkit-scrollbar-thumb { background: var(--bg-input); border-radius: 4px; }
 
-/* ── Typing indicator ── */
-#infobox {
-    display: block;
-    min-height: 18px;
-    font-size: 12px;
-    color: var(--text-muted);
-    font-style: italic;
-    padding: 0 20px 4px;
-    order: -1; /* stays at top of flex column — messages push down */
-}
-
-/* ── Message list ── */
 ul {
     list-style: none;
     display: flex;
     flex-direction: column;
     gap: 4px;
     padding: 0;
-    margin-top: auto; /* pushes messages to bottom */
+    margin-top: auto;
 }
 
-/* ── Bubbles — keep class names exactly as script.js uses them ── */
-.message_received,.message_info,
+.message_received,
 .message_send {
     max-width: 72%;
     padding: 8px 14px;
     border-radius: var(--radius-msg);
-    font-size: 14px;
+    font-size: var(--font-size);
     line-height: 1.5;
     word-break: break-word;
-    content-visibility: auto;
-    contain-intrinsic-size: 0 40px;
 }
-.message_info{
-    align-self: flex-start;
-    margin-left: 16px;
-    color: var(--text-primary);
-    text-align: left;
-}
+
 .message_received {
     align-self: flex-start;
     background: var(--bubble-recv);
@@ -182,19 +175,27 @@ ul {
     text-align: right;
 }
 
-/* ── Footer / Input bar ── */
+/* ── Footer ── */
 footer {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: var(--footer-h);
-    background: var(--bg-tertiary);
-    flex-direction: column;
+    background: var(--bg-primary);
     display: flex;
-    align-items: center;
-    padding: 0 16px;
+    flex-direction: column;
+    padding: 8px 16px 12px;
     z-index: 100;
+    gap: 4px;
+}
+
+#infobox {
+    display: block;
+    min-height: 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 0 4px;
 }
 
 footer form {
@@ -215,9 +216,7 @@ footer form {
     transition: border-color 0.15s;
 }
 
-.input-wrapper:focus-within {
-    border-color: var(--accent);
-}
+.input-wrapper:focus-within { border-color: var(--accent); }
 
 #message_input {
     flex: 1;
@@ -230,10 +229,7 @@ footer form {
     padding: 12px 0;
     caret-color: var(--accent);
 }
-
-#message_input::placeholder {
-    color: var(--text-muted);
-}
+#message_input::placeholder { color: var(--text-muted); }
 
 #send {
     flex-shrink: 0;
@@ -250,18 +246,13 @@ footer form {
     font-size: 15px;
     transition: background 0.15s, color 0.15s;
 }
-
-#send:hover {
-    background: var(--accent);
-    color: #fff;
-}
+#send:hover { background: var(--accent); color: #fff; }
 
 /* ── Responsive ── */
 @media (max-width: 600px) {
     .message_received,
-    .message_send {
-        max-width: 90%;
-    }
+    .message_send { max-width: 90%; }
+    #user-display { display: none !important; }
 }
 /* Style du conteneur de chargement en haut du chat */
 .chat-loader {

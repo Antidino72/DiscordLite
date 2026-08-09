@@ -1,6 +1,5 @@
 async function handleCredentialResponse(response) {
     const userData = parseJwt(response.credential);
-    console.log("Photo de profil :", userData.picture);
 
     try {
         const res = await fetch('/api/login', {
@@ -18,7 +17,7 @@ async function handleCredentialResponse(response) {
             localStorage.setItem("token", response.credential);
 
             // ✅ Rediriger vers la route racine "/" gérée par le serveur Express
-            window.location.href = "/";
+            window.location.href = "/login";
         } else {
             console.error("Erreur serveur lors de la connexion");
         }

@@ -30,7 +30,7 @@ module.exports = {
 
     // ⬅️ Obtenir les messages avant un ID spécifique (historique/scroll haut)
     getMessagesBeforeID: async (id, limit) => {
-        const query = 'SELECT * FROM messages WHERE id < $1 ORDER BY id DESC LIMIT $2';
+        const query = 'SELECT * FROM messages WHERE id < $1 ORDER BY id  LIMIT $2';
         const res = await pool.query(query, [id, limit]);
         return res.rows;
     },
@@ -44,7 +44,7 @@ module.exports = {
 
     // 📜 Obtenir les derniers messages
     getMessages: async (limit) => {
-        const query = 'SELECT * FROM messages ORDER BY id DESC LIMIT $1';
+        const query = 'SELECT * FROM messages ORDER BY id LIMIT $1';
         const res = await pool.query(query, [limit]);
         return res.rows;
     }

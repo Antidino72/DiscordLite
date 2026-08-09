@@ -1,4 +1,4 @@
-const db = require('../src/db/index');
+const db = require('../src/db/index'); // Supposé être une instance de pg.Pool
 
 const fakeUsers = [
     { id: 1, username: 'Antoine Veillé', image: 'https://i.pravatar.cc/150?img=11' },
@@ -14,68 +14,76 @@ const sampleMessages = [
     "WebStorm, c'est vraiment un super IDE.",
     "Quelqu'un veut faire une partie ce soir ?",
     "Le CSS 'content-visibility' est vraiment magique pour les perfs.",
-    "SQLite + Express + Socket.io = le combo parfait 👌",
+    "PostgreSQL + Express + Socket.io = le combo parfait 👌",
     "Haha tellement vrai !",
     "Attention, message de test numéro...",
     "Tout fonctionne nickel sur la BDD !"
 ];
 
-// Préparation des requêtes
-const insertStmt = db.prepare(`
-    INSERT INTO messages (user_id, username, user_image, content)
-    VALUES (?, ?, ?, ?)
-`);
-
-const clearStmt = db.prepare('DELETE FROM messages');
-const resetSeqStmt = db.prepare("DELETE FROM sqlite_sequence WHERE name='messages'");
-
-// Fonction pour tout vider
-function clearMessages() {
-    db.transaction(() => {
-        clearStmt.run();
-        try {
-            resetSeqStmt.run(); // Réinitialise l'AUTOINCREMENT de l'ID à 1
-        } catch (e) {
-            // Ignoré si la table n'utilise pas AUTOINCREMENT
-        }
-    })();
-    console.log("🧹 Tous les anciens messages ont été supprimés de la BDD.");
+// Fonction pour tout vider et réinitialiser l'auto-incrément (SERIAL / BIGSERIAL)
+async function clearMessages() {
+    try {
+        // TRUNCATE ... RESTART IDENTITY vide la table et remet la séquence d'ID à 1
+        await db.query('TRUNCATE TABLE messages RESTART IDENTITY CASCADE;');
+        console.log("🧹 Tous les anciens messages ont été supprimés et la séquence d'ID a été réinitialisée.");
+    } catch (error) {
+        console.error("❌ Erreur lors du nettoyage de la BDD :", error);
+    }
 }
 
-function generateFakeMessages(count = 100) {
+// Fonction pour générer les faux messages
+async function generateFakeMessages(count = 100) {
     console.log(`⏳ Génération de ${count} faux messages en cours...`);
 
-    const insertMany = db.transaction((total) => {
-        for (let i = 1; i <= total; i++) {
+    const client = await db.getClient ? await db.getClient() : await db.connect(); // Obtient un client pour la transaction
+
+    try {
+        await client.query('BEGIN'); // Début de la transaction
+
+        const insertQuery = `
+            INSERT INTO messages (user_id, username, user_image, content)
+            VALUES ($1, $2, $3, $4)
+        `;
+
+        for (let i = 1; i <= count; i++) {
             const user = fakeUsers[Math.floor(Math.random() * fakeUsers.length)];
             const randomText = sampleMessages[Math.floor(Math.random() * sampleMessages.length)];
             const content = `${randomText} (N°${i})`;
 
-            insertStmt.run(user.id, user.username, user.image, content);
+            await client.query(insertQuery, [user.id, user.username, user.image, content]);
         }
-    });
 
-    try {
-        insertMany(count);
+        await client.query('COMMIT'); // Validation de la transaction
         console.log(`✅ Succès ! ${count} messages ont été insérés.`);
     } catch (error) {
+        await client.query('ROLLBACK'); // Annulation en cas d'erreur
         console.error("❌ Erreur lors de l'insertion :", error);
+    } finally {
+        client.release(); // Libère le client pour le pool
     }
 }
 
-// --- GESTION DES ARGUMENTS CLI ---
-const args = process.argv.slice(2);
+// --- GESTION DES ARGUMENTS CLI ET EXÉCUTION ---
+async function run() {
+    const args = process.argv.slice(2);
 
-// Vérification des flags de nettoyage
-const shouldClear = args.includes('--clear') || args.includes('-c') || args.includes('--clean');
+    // Vérification des flags de nettoyage
+    const shouldClear = args.includes('--clear') || args.includes('-c') || args.includes('--clean');
 
-// Récupération d'un éventuel nombre personnalisé (ex: node seed.js 50)
-const countArg = args.find(arg => !isNaN(parseInt(arg)));
-const countToGenerate = countArg ? parseInt(countArg) : 100;
+    // Récupération d'un éventuel nombre personnalisé (ex: node seed.js 50)
+    const countArg = args.find(arg => !isNaN(parseInt(arg)));
+    const countToGenerate = countArg ? parseInt(countArg) : 100;
 
-if (shouldClear) {
-    clearMessages();
-}else {
-    generateFakeMessages(countToGenerate);
+    if (shouldClear) {
+        await clearMessages();
+    } else {
+        await generateFakeMessages(countToGenerate);
+    }
+
+    // Fermeture propre de la connexion si db.end existe
+    if (db.end) {
+        await db.end();
+    }
 }
 
+run();

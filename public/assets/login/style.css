@@ -1,4 +1,7 @@
 /* ── Reset ── */
+:root{
+    --font-display: 'Syne', system-ui, sans-serif;
+}
 *, *::before, *::after {
     margin: 0;
     padding: 0;
@@ -17,11 +20,23 @@
     --border:       rgba(255,255,255,0.06);
     --font:         'Inter', system-ui, sans-serif;
 }
-
+.brand-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--font-display), serif;
+    font-weight: 800;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 /* ── Base ── */
 html, body {
     height: 100%;
-    font-family: var(--font);
+    font-family: var(--font), serif;
     background: var(--bg-primary);
     color: var(--text-primary);
     display: flex;

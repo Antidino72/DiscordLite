@@ -1,5 +1,6 @@
 const route = require("express").Router();
 const queries = require("../db/queries");
+const path = require("node:path");
 
 route.get('/messages', async (req, res) => {
     const beforeId = req.query.before;
@@ -17,6 +18,23 @@ route.get('/messages', async (req, res) => {
         // Derniers messages pour le premier chargement
         messages = await queries.getMessages(limit)
         return res.json({messages});
+    }
+});
+
+route.get('/image/:id', async (req, res) => {
+    const imageId = req.params.id;
+
+    switch (imageId) {
+        case 'send':
+
+            return res.status(200).sendFile(path.join(__dirname, '../../public/assets/chat/image/send.png'));
+
+        case 'logo':
+            return res.status(200).sendFile(path.join(__dirname, '../../public/assets/chat/image/logo.png'));
+
+        default:
+
+            return res.status(404).send(`Not Found : ${imageId}`);
     }
 });
 module.exports = route;

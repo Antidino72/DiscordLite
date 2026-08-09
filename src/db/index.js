@@ -1,8 +1,14 @@
 const { Pool } = require("pg");
-
+require('dotenv').config();
+const caCert = process.env.PG_CA_CERT_BASE64
+    ? Buffer.from(process.env.PG_CA_CERT, 'base64').toString('utf-8')
+    : undefined;
 const pool = new Pool({
  connectionString: process.env.DATABASE_URL,
- ssl: { rejectUnauthorized: false },
+ ssl: {
+  rejectUnauthorized: true,
+  ca : caCert
+ },
 });
 
 // ==========================================
@@ -33,8 +39,6 @@ const initDb = async () => {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
-
-  console.log("✅ Tables PostgreSQL initialisées avec succès !");
  } catch (err) {
   console.error("❌ Erreur lors de l'initialisation de la base de données :", err);
  }

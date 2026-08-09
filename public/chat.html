@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,29 +7,103 @@
     <title>Discord Lite</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/chat/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat&family=Fira+Code&family=Inter:wght@400;500;600&family=JetBrains+Mono&family=Lato&family=Lora&family=Merriweather&family=Montserrat&family=Open+Sans&family=Pacifico&family=Pixelify+Sans&family=Playfair+Display&family=Poppins&family=Press+Start+2P&family=Roboto&family=Silkscreen&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/chat/css/style.css">
+    <link rel="stylesheet" href="assets/chat/css/burger.css">
     <script src="https://kit.fontawesome.com/efbce3c669.js" crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 </head>
 <body>
+
 <header>
     <div class="header-left">
-        <div class="user_picture"><img src="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg" alt="user picture" referrerpolicy="no-referrer"></div>
-        <div class="header-info">
-            <h1>Discord Lite</h1>
-        </div>
-        <div id="user-display" style="padding: 8px 12px; margin: 5px; background-color: rgb(240, 242, 245); border: 1px solid rgb(204, 204, 204); border-radius: 4px; font-size: 14px; font-weight: bold; color: rgb(51, 51, 51); display: inline-block;">Current User</div>
+        <div class="user_picture"><img src="https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg"></div>
+        <div class="header-info"><h1>Discord Lite</h1></div>
+        <div id="user-display" ...>Current User</div>
     </div>
     <div class="header-right">
-            <span class="online-badge">
-                <span class="dot"></span>
-                En ligne
-            </span>
+        <span class="online-badge">
+            <span class="dot"></span>
+            En ligne
+        </span>
+        <!-- Burger ici, dans le header -->
+        <a href="#wrap" id="open">
+            <button class="hamburger" aria-label="Ouvrir le menu" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </a>
     </div>
-</header>
+    <nav class="nav">
 
+        <a href="#" id="close">×</a>
+        <h1><a href="#">Discord Lite</a></h1>
+        <div class="user-card">
+            <span class="user-name">Antoine Veillé</span>
+            <span class="badge-status">En ligne</span>
+        </div>
+
+        <div class="settings-group font-select-group">
+            <label for="font-select">Police d'écriture</label>
+            <select id="font-select">
+                <optgroup label="Sans Serif (Modernes)">
+                    <option value="inter">Inter</option>
+                    <option value="roboto">Roboto</option>
+                    <option value="helvetica">Helvetica / Arial</option>
+                    <option value="open-sans">Open Sans</option>
+                    <option value="poppins">Poppins</option>
+                    <option value="montserrat">Montserrat</option>
+                    <option value="lato">Lato</option>
+                    <option value="syne">Syne</option>
+                </optgroup>
+
+                <optgroup label="Serif (Élégantes)">
+                    <option value="playfair">Playfair Display</option>
+                    <option value="merriweather">Merriweather</option>
+                    <option value="georgia">Georgia</option>
+                    <option value="lora">Lora</option>
+                </optgroup>
+
+                <optgroup label="Monospace (Code)">
+                    <option value="fira-code">Fira Code</option>
+                    <option value="jetbrains-mono">JetBrains Mono</option>
+                    <option value="courier">Courier New</option>
+                </optgroup>
+
+                <optgroup label="Rétro & Pixel Art 👾">
+                    <option value="press-start">Press Start 2P</option>
+                    <option value="pixelify">Pixelify Sans</option>
+                    <option value="silkscreen">Silkscreen</option>
+                </optgroup>
+
+                <optgroup label="Originales & Manuscrites">
+                    <option value="pacificum">Pacifico</option>
+                    <option value="caveat">Caveat</option>
+                </optgroup>
+            </select>
+        </div>
+        <div class="settings-group">
+            <label for="color-select">Choisir la couleur</label>
+            <input type="color" id="color-select">
+        </div>
+
+        <div class="settings-group">
+            <label for="notification-setting">Notifications sonores</label>
+            <input id="notification-setting" type="checkbox" checked />
+        </div>
+        <div class="settings-group">
+            <label for="font-size-select">Taille de la police</label>
+            <input type="number" id="font-size-select">
+        </div>
+        <button id="reset-settings-btn" class="btn-reset">
+            Réinitialiser les paramètres
+        </button>
+        <button class="btn-logout">Déconnexion</button>
+    </nav>
+</header>
+<span id="wrap"></span>
 <div id="messages">
     <ul id="messagebox"></ul>
 </div>
@@ -44,6 +118,6 @@
     </form>
 </footer>
 
-<script src="assets/chat/script.js"></script>
+<script type="module" src="assets/chat/js/main.js" ></script>
 </body>
 </html>
