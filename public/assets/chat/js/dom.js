@@ -1,0 +1,9 @@
+export const sendButton = document.getElementById('send');
+export const messagebox = document.getElementById('messagebox');
+export const message_scroll = document.getElementById('messages');
+export const messageInput = document.getElementById('message_input');
+export const infoBox = document.getElementById('infobox');
+export const userLogo = document.querySelector('.user_picture > img');
+export const usernameDisplayBurger = document.querySelector('.user-name');
+export const usernameDisplay = document.getElementById('user-display');
+export const notification_settings = document.querySelector('#notification-setting')
