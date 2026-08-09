@@ -1,11 +1,9 @@
 const { OAuth2Client } = require('google-auth-library');
 
-// Ton Client ID Google (disponible sur la Google Cloud Console)
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(CLIENT_ID);
 
 async function requireAuth(req, res, next) {
-    // 1. Si l'utilisateur est déjà connecté via la session classique
     if (req.session && req.session.user) {
         return next();
     }

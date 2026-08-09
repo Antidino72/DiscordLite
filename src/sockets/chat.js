@@ -1,59 +1,77 @@
 // src/sockets/chat.js
-const { OAuth2Client } = require('google-auth-library');
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID || 'TON_CLIENT_ID_GOOGLE.apps.googleusercontent.com';
-const client = new OAuth2Client(CLIENT_ID);
 const queries = require("../db/queries");
+
 module.exports = (io) => {
 
     io.on('connection', (socket) => {
 
-        socket.on('login', async (data) => {
-            // 1. On vérifie si un token a bien été envoyé dans l'objet (ex: { token: '...' })
-            const token = data?.token || data;
+        // 1. Récupérer l'utilisateur stocké dans la session Express (au moment du handshake)
+        const session = socket.request?.session;
+        const user = session?.user;
 
-            if (!token || typeof token !== 'string') {
-                console.warn(`⚠️ Événement login reçu sans token valide :`, data);
+        // 2. Si pas de session valide, on refuse la connexion socket
+        if (!user) {
+            console.warn("⚠️ Connexion Socket refusée : Aucune session Express valide.");
+            socket.emit('unauthorized', { message: "Non authentifié" });
+            return socket.disconnect(true);
+        }
+
+        // 3. Attacher l'utilisateur à la socket
+        socket.user = user;
+        console.log(`✅ Socket connectée pour l'utilisateur : ${socket.user.username}`);
+        socket.broadcast.emit('user_connected', {
+            user: socket.user,
+            message: `${socket.user.username} a rejoint le chat.`
+        });
+        // ==========================================
+        //         ÉVÉNEMENTS DE CHAT (Au même niveau)
+        // ==========================================
+
+        // Réception et sauvegarde d'un message
+        socket.on('message_input', async (json) => {
+            if (!socket.user) {
+                console.error("⚠️ Message refusé : utilisateur non identifié.");
                 return;
             }
 
+            const messageText = json.message;
+            if (!messageText || !messageText.trim()) return;
+
             try {
-                // 2. Vérification du token Google auprès de Google
-                const ticket = await client.verifyIdToken({
-                    idToken: token,
-                    audience: CLIENT_ID,
-                });
+                // Insertion dans la base de données
+                await queries.insertMessage(
+                    socket.user.user_id,
+                    socket.user.username,
+                    socket.user.image || socket.user.picture,
+                    messageText
+                );
 
-                const payload = ticket.getPayload();
-
-// 1. On récupère l'utilisateur complet depuis la BDD grâce à payload.sub (son ID Google)
-                const dbUser = await queries.findGoogleId(payload.sub);
-
-// 2. On vérifie s'il N'EXISTE PAS en BDD (note le !)
-                if (!dbUser) {
-                    console.warn("⚠️ Événement login reçu mais utilisateur non existant en BDD");
-                    return socket.emit('login_error', { message: "Utilisateur non inscrit." });
-                }
-
-// 3. On stocke l'ID de la BDD et les infos récupérées
-                socket.user = {
-                    user_id: dbUser.id,         // ID interne PostgreSQL (ex: 1, 2, 3...)
-                    google_id: payload.sub,     // ID Google
-                    username: dbUser.username || payload.name, // Pseudo BDD (ou Google en secours)
-                    email: dbUser.email || payload.email,
-                    picture: dbUser.picture || payload.picture
+                // Construction de l'objet à diffuser
+                const fullMessage = {
+                    user_id: socket.user.user_id,
+                    username: socket.user.username,
+                    user_image: socket.user.image || socket.user.picture,
+                    message: messageText,
+                    created_at: new Date().toISOString()
                 };
 
-                // 4. Notification aux autres utilisateurs
-                socket.broadcast.emit('user_connected', {
-                    user: socket.user,
-                    message: `${socket.user.username} a rejoint le chat.`
-                });
+                // Diffusion à TOUS les clients
+                io.emit("message_received", fullMessage);
 
             } catch (error) {
-                // Le token est expiré, falsifié ou invalide
-                console.warn(`⚠️ Événement login reçu mais token Google invalide :`, error.message);
+                console.error("Erreur lors de l'enregistrement du message :", error);
             }
         });
+
+        // Indicateur de frappe
+        socket.on('typing', () => {
+            socket.broadcast.emit('typing', {
+                username: socket.user.username,
+                socket_id: socket.id
+            });
+        });
+
+        // Déconnexion
         socket.on('disconnect', (reason) => {
             if (socket.user) {
                 io.emit('user_left', {
@@ -61,45 +79,10 @@ module.exports = (io) => {
                     message: `${socket.user.username} a quitté le chat.`
                 });
             } else {
-                console.warn(`❌ Un utilisateur non identifié s'est déconnecté (${socket})`);
+                console.warn(`❌ Socket non identifiée déconnectée (${socket.id}) : ${reason}`);
             }
-        });
-
-        socket.on('typing', (json) => {
-            socket.broadcast.emit('typing', {
-                username: json.username,
-                socket_id: socket.id
-            });
-        });
-        socket.on('message_input', async (json) => {
-            // 1. Sécurité : Vérifier que la socket est bien identifiée
-            if (!socket.user) {
-                console.error("⚠️ Message refusé : utilisateur non identifié sur la socket.");
-                return;
-            }
-
-            const messageText = json.message;
-
-            // 2. Insérer dans SQLite (avec l'ID utilisateur BDD, son pseudo, son image et le texte)
-            await queries.insertMessage(
-                socket.user.user_id,
-                socket.user.username,
-                socket.user.picture,
-                messageText
-            );
-
-            // 3. Construire l'objet complet à diffuser en temps réel
-            const fullMessage = {
-                user_id: socket.user.user_id,        // ID réel en BDD
-                username: socket.user.username, // Pseudo Google
-                user_image: socket.user.picture,  // Photo Google
-                message: messageText,
-                created_at: new Date().toISOString()
-            };
-            // 4. Envoyer le message complet à TOUS les clients connectés
-            io.emit("message_received", fullMessage);
         });
 
     });
 
-}
+};

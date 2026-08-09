@@ -20,7 +20,7 @@ export function emitSocketLogin() {
 
 export async function loadUserProfile() {
     try {
-        const response = await fetch('/api/me');
+        const response = await fetch('/api/me', { credentials: 'include' });
 
         if (!response.ok) {
             window.location.href = '/login';

@@ -34,7 +34,7 @@ export function initTypingEvent() {
 
 export function initLogoutEvent() {
     document.querySelector('.btn-logout').addEventListener('click', async () => {
-        await fetch('/api/logout', { method: 'POST' });
+        await fetch('/api/logout', { method: 'POST', credentials: 'include' });
         localStorage.removeItem('token');
         sessionStorage.clear();
         window.location.href = '/login.html';

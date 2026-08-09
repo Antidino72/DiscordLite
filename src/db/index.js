@@ -1,11 +1,8 @@
 const { Pool } = require("pg");
-require('dotenv').config();
 
 const pool = new Pool({
  connectionString: process.env.DATABASE_URL,
- ssl: {
-  rejectUnauthorized: false
- },
+ ssl: true,
 });
 
 // ==========================================
@@ -42,6 +39,6 @@ const initDb = async () => {
 };
 
 // Exécuter l'initialisation au démarrage
-initDb();
 
-module.exports = pool;
+
+module.exports = {pool,initDb};

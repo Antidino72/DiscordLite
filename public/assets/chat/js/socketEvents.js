@@ -4,6 +4,12 @@ import { createMessageElement } from './messages.js';
 import {showNotification } from './settings/notification.js';
 
 export function initSocketListeners() {
+    socket.on('unauthorized', () => {
+        console.warn("Session expirée ou serveur redémarré. Redirection vers le login...");
+
+        // On redirige proprement l'utilisateur vers la page de connexion
+        window.location.href = '/login';
+    });
     socket.on('user_connected', (data) => {
         messagebox.appendChild(createMessageElement(data.message, 'message_info'));
     });

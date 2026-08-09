@@ -36,12 +36,17 @@ export async function loadMessagesHistory() {
             const fragment = document.createDocumentFragment();
 
             messages.forEach(msg => {
-                const isMyMessage =msg.user_id === state.currentUser.user_id;
+                 // 1. Récupération sécurisée de l'ID courant (supporte .user_id ou .id)
+                const currentUserId = state.currentUser?.user_id ?? state.currentUser?.id;
+
+                // 2. Conversion explicite en Number() pour éviter le piège String vs Number
+                const isMyMessage = Number(msg.user_id) === Number(currentUserId);
+
                 const messageText = `${msg.username} : ${msg.content || msg.message}`;
                 const className = isMyMessage ? 'message_send' : 'message_received';
+
                 fragment.appendChild(createMessageElement(messageText, className));
             });
-
             if (isPagination) {
                 messagebox.insertBefore(fragment, messagebox.firstChild);
                 messagebox.scrollTop = messagebox.scrollHeight - previousScrollHeight;
