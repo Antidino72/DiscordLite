@@ -6,18 +6,18 @@
   "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start" : "node index.js",
-    "flood-message" : "node ./utils_function/index.js",
-    "clean-message" : "node ./utils_function/index.js --clear"
+    "start": "node index.js",
+    "flood-message": "node ./utils_function/index.js",
+    "clean-message": "node ./utils_function/index.js --clear"
   },
   "keywords": [],
   "author": "Antidino",
   "license": "MIT",
   "dependencies": {
-    "better-sqlite3": "^13.0.3",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
+    "pg": "^8.23.0",
     "socket.io": "^4.8.3"
   }
 }

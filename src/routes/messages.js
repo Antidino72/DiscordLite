@@ -1,7 +1,7 @@
 const route = require("express").Router();
 const queries = require("../db/queries");
 
-route.get('/messages', (req, res) => {
+route.get('/messages', async (req, res) => {
     const beforeId = req.query.before;
     const afterId = req.query.after;
     const limit = 30;
@@ -9,13 +9,13 @@ route.get('/messages', (req, res) => {
     let messages;
     if (beforeId) {
         // Sélectionne les messages plus anciens que beforeId
-        messages = queries.getMessagesBeforeID.all(beforeId,limit).reverse()
+        messages = await queries.getMessagesBeforeID(beforeId, limit)
         return res.json({messages});
     } else if (afterId) {
-        messages = queries.getMessagesAfterID.all(afterId,limit)
-    }else {
+        messages = await queries.getMessagesAfterID(afterId, limit)
+    } else {
         // Derniers messages pour le premier chargement
-        messages = queries.getMessages.all(limit).reverse();
+        messages = await queries.getMessages(limit)
         return res.json({messages});
     }
 });

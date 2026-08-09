@@ -39,7 +39,7 @@ module.exports = (io) => {
                 socket_id: socket.id
             });
         });
-        socket.on('message_input', (json) => {
+        socket.on('message_input', async (json) => {
             // 1. Sécurité : Vérifier que la socket est bien identifiée
             if (!socket.user) {
                 console.error("⚠️ Message refusé : utilisateur non identifié sur la socket.");
@@ -49,7 +49,7 @@ module.exports = (io) => {
             const messageText = json.message;
 
             // 2. Insérer dans SQLite (avec l'ID utilisateur BDD, son pseudo, son image et le texte)
-            queries.insertMessage.run(
+            await queries.insertMessage(
                 socket.user.user_id,
                 socket.user.username,
                 socket.user.image,
