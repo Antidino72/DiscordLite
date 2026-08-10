@@ -30,7 +30,7 @@ A lightweight Discord clone built to learn **Node.js**, **Express**, **Socket.IO
 
 ## Start
 
-```javascript
+```
 
 git clone https://github.com/Antidino72/DiscordLite
 
