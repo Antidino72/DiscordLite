@@ -3,7 +3,7 @@ const queries = require("../db/queries");
 
 module.exports = (io) => {
 
-    io.on('connection', (socket) => {
+    io.on('connection', async (socket) => {
 
         // 1. Récupérer l'utilisateur stocké dans la session Express (au moment du handshake)
         const session = socket.request?.session;
@@ -12,13 +12,12 @@ module.exports = (io) => {
         // 2. Si pas de session valide, on refuse la connexion socket
         if (!user) {
             console.warn("⚠️ Connexion Socket refusée : Aucune session Express valide.");
-            socket.emit('unauthorized', { message: "Non authentifié" });
+            socket.emit('unauthorized', {message: "Non authentifié"});
             return socket.disconnect(true);
         }
 
-        // 3. Attacher l'utilisateur à la socket
         socket.user = user;
-        console.log(`✅ Socket connectée pour l'utilisateur : ${socket.user.username}`);
+        await queries.updateUserStatus(socket.user.id, "online");
         socket.broadcast.emit('user_connected', {
             user: socket.user,
             message: `${socket.user.username} a rejoint le chat.`
@@ -30,7 +29,7 @@ module.exports = (io) => {
         // Réception et sauvegarde d'un message
         socket.on('message_input', async (json) => {
             if (!socket.user) {
-                console.error("⚠️ Message refusé : utilisateur non identifié.");
+                console.error("Message refusé : utilisateur non identifié.");
                 return;
             }
 
@@ -72,12 +71,13 @@ module.exports = (io) => {
         });
 
         // Déconnexion
-        socket.on('disconnect', (reason) => {
+        socket.on('disconnect', async (reason) => {
             if (socket.user) {
                 io.emit('user_left', {
                     user: socket.user,
                     message: `${socket.user.username} a quitté le chat.`
                 });
+                await queries.updateUserStatus(socket.user.id, "offline");
             } else {
                 console.warn(`❌ Socket non identifiée déconnectée (${socket.id}) : ${reason}`);
             }

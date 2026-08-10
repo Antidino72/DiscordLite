@@ -23,7 +23,9 @@ route.get('/messages', async (req, res) => {
 
 route.get('/image/:id', async (req, res) => {
     const imageId = req.params.id;
-
+    if (!imageId) {
+        return res.status(400).send("No id found in your request");
+    }
     switch (imageId) {
         case 'send':
 
@@ -37,4 +39,7 @@ route.get('/image/:id', async (req, res) => {
             return res.status(404).send(`Not Found : ${imageId}`);
     }
 });
+route.get("/user",async (req, res) => {
+    res.status(200).json(await queries.getUserList())
+})
 module.exports = route;

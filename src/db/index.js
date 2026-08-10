@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+require("dotenv").config();
 
 const pool = new Pool({
  connectionString: process.env.DATABASE_URL,
@@ -40,5 +41,4 @@ const initDb = async () => {
 
 // Exécuter l'initialisation au démarrage
 
-
-module.exports = {pool,initDb};
+module.exports = {pool,initDb}

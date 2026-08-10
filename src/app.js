@@ -17,7 +17,7 @@ const limiter = rateLimit({
     limit: 100 // limite chaque IP à 100 requêtes par fenêtre
 });
 require('./sockets/chat')(io)
-
+initDb();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -62,8 +62,8 @@ app.use('/api/',limiter);
 //          Route
 //===================================
 app.use('/',require('./routes/pages'));
-app.use('/api',require('./routes/auth'),);
-app.use('/api',require('./routes/messages'));
+app.use('/api',require('./routes/authAPI'),);
+app.use('/api',require('./routes/ChatAPI'));
 initDb()
 module.exports={
     app : app,

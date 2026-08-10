@@ -11,7 +11,7 @@ A lightweight Discord clone built to learn **Node.js**, **Express**, **Socket.IO
 
 - **Google OAuth2 Login:** Passwordless auth handled on the server.
 - **Real-time Messaging:** WebSockets powered by Socket.IO.
-- **Session Security:** Session IDs stored in `HttpOnly` and `SameSite` cookies (protected against XSS).
+- **Session Security:** Session IDs stored in `HttpOnly` and `SameSite` cookies, reducing the risk of session theft through XSS.
 - **Persistent Data:** Message history saved in PostgreSQL.
 - **API Protection:** Rate limiting on auth endpoints to prevent spam.
 
