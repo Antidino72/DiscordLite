@@ -1,0 +1,50 @@
+import express, {} from 'express';
+import { rateLimit } from "express-rate-limit";
+import { initDb } from "./db/index.js";
+import dotenv from "dotenv";
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config();
+export const app = express();
+import http_module from "http";
+export const http = http_module.createServer(app);
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    message: {
+        error: 'Too many requests, please try again later.',
+        retryAfter: 900
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    limit: 10
+});
+initDb();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+    next();
+});
+if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+}
+app.get('/', async (req, res) => {
+    res.json({
+        message: "hi"
+    });
+});
+// Serve static assets (CSS, client JS, images)
+app.use(express.static(join(__dirname, '../public')));
+//==================================
+//          Limiter
+//===================================
+app.use('/api/', limiter);
+//===================================
+//          Route
+//===================================
+import authRoute from './routes/authAPI.js';
+import chatRoute from "./routes/ChatAPI.js";
+app.use('/api', authRoute);
+app.use('/api', chatRoute);
+//# sourceMappingURL=app.js.map

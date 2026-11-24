@@ -1,0 +1,13 @@
+@baseUrl = http://localhost:3000/api/
+
+### test connexion
+GET  http://localhost:3000
+
+### Create account
+POST {{baseUrl}}signup
+Content-Type: application/json
+
+{
+    "username": "test",
+    "password": "exemple"
+}

@@ -1,30 +1,36 @@
 {
-  "name": "discord-lite",
+  "name": "Crow",
   "version": "1.0.0",
-  "description": "A discord Lite made by heart for learn node",
+  "description": "HeadLess Social Média",
   "main": "index.js",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "test": "jest",
-    "start": "node index.js",
+    "start": "tsc && node dist/index.js",
     "flood-message": "node test/manageDB.js",
-    "clean-message": "node test/manageDB.js --clear"
+    "clean-message": "node test/manageDB.js --clear",
+    "build": "tsc",
+    "dev": "tsx src/index.ts"
   },
   "keywords": [],
   "author": "Antidino",
   "license": "MIT",
   "dependencies": {
+    "@types/node": "^26.6.6",
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.6.2",
-    "express-session": "^1.19.0",
-    "google-auth-library": "^11.0.0",
-    "pg": "^8.23.0",
-    "socket.io": "^4.8.3"
+    "pg": "^8.23.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.6",
+    "@types/express-session": "^1.19.0",
     "@types/jest": "^30.0.0",
+    "@types/pg": "^8.23.1",
     "jest": "^30.4.2",
-    "supertest": "^7.2.2"
+    "supertest": "^7.2.2",
+    "typescript": "^7.0.2"
   }
 }
