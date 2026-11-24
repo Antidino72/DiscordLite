@@ -1,10 +1,15 @@
 import jwt from "jsonwebtoken";
 import type { Request, Response, NextFunction } from "express";
 
-const JWT_SECRET = process.env.JWT_SECRET!;
+// Lu à l'exécution, pas au chargement du module (dotenv doit être déjà chargé)
+function getSecret(): string {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) throw new Error("JWT_SECRET is not defined");
+    return secret;
+}
 
-export function signToken(userId: number): string {
-    return jwt.sign({ sub: String(userId) }, JWT_SECRET, { expiresIn: "7d" });
+export function signToken(publicId: string): string {
+    return jwt.sign({ sub: publicId }, getSecret(), { expiresIn: "7d" });
 }
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
@@ -13,8 +18,8 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
         return res.status(401).json({ error: "Not authenticated" });
     }
     try {
-        const payload = jwt.verify(header.slice(7), JWT_SECRET) as { sub: string };
-        res.locals.userId = Number(payload.sub);
+        const payload = jwt.verify(header.slice(7), getSecret()) as { sub: string };
+        res.locals.userPublicId = payload.sub;
         next();
     } catch {
         return res.status(401).json({ error: "Invalid or expired token" });

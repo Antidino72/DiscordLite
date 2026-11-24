@@ -15,8 +15,9 @@ export const initDb = async () => {
         // Table USERS
         await pool.query(`
             CREATE TABLE IF NOT EXISTS users (
+                public_id UUID NOT NULL DEFAULT gen_random_uuid() UNIQUE,
                 id SERIAL PRIMARY KEY,
-                username TEXT NOT NULL,
+                username TEXT NOT NULL UNIQUE,
                 password_hash TEXT NOT NULL,
                 is_ginger BOOL NOT NULL DEFAULT TRUE,
                 image_url TEXT,

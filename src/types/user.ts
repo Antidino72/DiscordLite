@@ -1,5 +1,6 @@
 export interface User {
     id: number;
+    public_id: string;
     username: string;
     password_hash: string;
     is_ginger: boolean;

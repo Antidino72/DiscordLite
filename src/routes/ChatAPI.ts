@@ -12,7 +12,6 @@ route.get('/messages', async (req: Request, res: Response) => {
 
     let messages;
     if (beforeId) {
-        // Sélectionne les messages plus anciens que beforeId
         messages = await queries.getMessagesBeforeID(beforeId, limit)
         return res.json({ messages });
     } else if (afterId) {

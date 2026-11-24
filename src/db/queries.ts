@@ -13,8 +13,8 @@ export class Queries{
         const res = await pool.query(query, [username, password, final_image]);
         return res.rows[0];
     }
-    async getUserByUsername(username: string): Promise<{ id: number; username: string; password_hash: string } | undefined> {
-        const query = 'SELECT id, username, password_hash FROM users WHERE username = $1 LIMIT 1';
+    async getUserByUsername(username: string): Promise<User | undefined> {
+        const query = 'SELECT id , public_id, username, password_hash FROM users WHERE username = $1 LIMIT 1';
         const res = await pool.query(query, [username]);
         return res.rows[0];
     }
@@ -23,6 +23,11 @@ export class Queries{
         const res = await pool.query(query, [userId, username, userImage, content]);
         return res.rows[0];
     }
+    async getUserByPublicId(publicId: string): Promise<User | undefined> {
+    const query = 'SELECT id, public_id, username, image_url FROM users WHERE public_id = $1 LIMIT 1';
+    const res = await pool.query(query, [publicId]);
+    return res.rows[0];
+}
     async getMessagesBeforeID(id: any, limit: any): Promise<any[]> {
         const query = 'SELECT * FROM messages WHERE id < $1 ORDER BY id  LIMIT $2';
         const res = await pool.query(query, [id, limit]);

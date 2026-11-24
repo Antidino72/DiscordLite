@@ -1,7 +1,7 @@
 @baseUrl = http://localhost:3000/api/
 
-### test connexion
-GET  http://localhost:3000
+### Test connexion
+GET http://localhost:3000
 
 ### Create account
 POST {{baseUrl}}signup
@@ -12,11 +12,54 @@ Content-Type: application/json
     "password": "exemple"
 }
 
-### Login 
+### Create account : doublon (doit renvoyer 409)
+POST {{baseUrl}}signup
+Content-Type: application/json
+
+{
+    "username": "test",
+    "password": "autre"
+}
+
+### Create account : champ manquant (doit renvoyer 400)
+POST {{baseUrl}}signup
+Content-Type: application/json
+
+{
+    "username": "sansmotdepasse"
+}
+
+### Login
 POST {{baseUrl}}login
 Content-Type: application/json
 
 {
-    "username" : "test",
-    "password" : "exemple"
+    "username": "test",
+    "password": "exemple"
 }
+
+### Login : mauvais mot de passe (doit renvoyer 401)
+POST {{baseUrl}}login
+Content-Type: application/json
+
+{
+    "username": "test",
+    "password": "mauvais"
+}
+
+### Login : utilisateur inexistant (doit renvoyer 401)
+POST {{baseUrl}}login
+Content-Type: application/json
+
+{
+    "username": "fantome",
+    "password": "exemple"
+}
+
+### Me sans token (doit renvoyer 401)
+GET {{baseUrl}}me
+
+### Me avec token
+# Remplace TOKEN par la valeur reçue au login
+GET {{baseUrl}}me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYmZmNWUxNy1lYTZjLTRhMmMtYjI5Ny0xNGI0NzNkMDQ0YWQiLCJpYXQiOjE3OTU1MzQ4MjgsImV4cCI6MTc5NjEzOTYyOH0.JJuZO10AsUAPWtcWwYnE4QbTqP_G_CRYV_hMqvaSmwU

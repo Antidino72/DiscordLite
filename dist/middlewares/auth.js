@@ -1,8 +1,13 @@
-// middleware/auth.ts
 import jwt from "jsonwebtoken";
-const JWT_SECRET = process.env.JWT_SECRET;
-export function signToken(userId) {
-    return jwt.sign({ sub: String(userId) }, JWT_SECRET, { expiresIn: "7d" });
+// Lu à l'exécution, pas au chargement du module (dotenv doit être déjà chargé)
+function getSecret() {
+    const secret = process.env.JWT_SECRET;
+    if (!secret)
+        throw new Error("JWT_SECRET is not defined");
+    return secret;
+}
+export function signToken(publicId) {
+    return jwt.sign({ sub: publicId }, getSecret(), { expiresIn: "7d" });
 }
 export function requireAuth(req, res, next) {
     const header = req.headers.authorization;
@@ -10,8 +15,8 @@ export function requireAuth(req, res, next) {
         return res.status(401).json({ error: "Not authenticated" });
     }
     try {
-        const payload = jwt.verify(header.slice(7), JWT_SECRET);
-        res.locals.userId = Number(payload.sub);
+        const payload = jwt.verify(header.slice(7), getSecret());
+        res.locals.userPublicId = payload.sub;
         next();
     }
     catch {

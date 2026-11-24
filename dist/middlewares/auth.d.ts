@@ -1,4 +1,4 @@
 import type { Request, Response, NextFunction } from "express";
-export declare function signToken(userId: number): string;
+export declare function signToken(publicId: string): string;
 export declare function requireAuth(req: Request, res: Response, next: NextFunction): Response<any, Record<string, any>> | undefined;
 //# sourceMappingURL=auth.d.ts.map

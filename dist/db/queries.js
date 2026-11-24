@@ -11,13 +11,18 @@ export class Queries {
         return res.rows[0];
     }
     async getUserByUsername(username) {
-        const query = 'SELECT id, username, password_hash FROM users WHERE username = $1 LIMIT 1';
+        const query = 'SELECT id , public_id, username, password_hash FROM users WHERE username = $1 LIMIT 1';
         const res = await pool.query(query, [username]);
         return res.rows[0];
     }
     async insertMessage(userId, username, userImage, content) {
         const query = 'INSERT INTO messages (user_id, username, user_image, content) VALUES ($1, $2, $3, $4) RETURNING *';
         const res = await pool.query(query, [userId, username, userImage, content]);
+        return res.rows[0];
+    }
+    async getUserByPublicId(publicId) {
+        const query = 'SELECT id, public_id, username, image_url FROM users WHERE public_id = $1 LIMIT 1';
+        const res = await pool.query(query, [publicId]);
         return res.rows[0];
     }
     async getMessagesBeforeID(id, limit) {
