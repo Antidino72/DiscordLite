@@ -23,19 +23,23 @@ const limiter = rateLimit({
 initDb();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-    next();
-});
-if (process.env.NODE_ENV === 'production') {
-    app.set('trust proxy', 1);
-}
 app.get('/', async (req, res) => {
     res.json({
         message: "hi"
     });
 });
-// Serve static assets (CSS, client JS, images)
-app.use(express.static(join(__dirname, '../public')));
+app.use((req, res, next) => {
+    if (req.method === "POST" && !req.is("application/json")) {
+        return res.status(415).json({
+            error: "Unsupported Media Type",
+            message: "Content-Type doit être application/json",
+        });
+    }
+    next();
+});
+if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+}
 //==================================
 //          Limiter
 //===================================

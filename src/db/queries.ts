@@ -1,6 +1,7 @@
+import type { User } from "../types/user.js";
 import {pool} from "./index.js"
 export class Queries{
-    async insertUser(username : string, password: string, image: string |null) :  Promise<string>{
+    async insertUser(username : string, password: string, image: string |null) :  Promise<User>{
         
         if (!image) {
             image = process.env.DEFAULT_USER_IMAGE 
@@ -12,6 +13,11 @@ export class Queries{
         const res = await pool.query(query, [username, password, final_image]);
         return res.rows[0];
     }
+    async getUserByUsername(username: string): Promise<{ id: number; username: string; password_hash: string } | undefined> {
+        const query = 'SELECT id, username, password_hash FROM users WHERE username = $1 LIMIT 1';
+        const res = await pool.query(query, [username]);
+        return res.rows[0];
+    }
     async insertMessage(userId: any, username: any, userImage: any, content: any) : Promise<string>{
         const query = 'INSERT INTO messages (user_id, username, user_image, content) VALUES ($1, $2, $3, $4) RETURNING *';
         const res = await pool.query(query, [userId, username, userImage, content]);
@@ -21,7 +27,7 @@ export class Queries{
         const query = 'SELECT * FROM messages WHERE id < $1 ORDER BY id  LIMIT $2';
         const res = await pool.query(query, [id, limit]);
         return res.rows;
-    }
+    }   
 
     async getMessagesAfterID (id: any, limit: any) : Promise<any[]>  {
         const query = 'SELECT * FROM messages WHERE id > $1 ORDER BY id  LIMIT $2';

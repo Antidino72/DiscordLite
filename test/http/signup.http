@@ -11,3 +11,12 @@ Content-Type: application/json
     "username": "test",
     "password": "exemple"
 }
+
+### Login 
+POST {{baseUrl}}login
+Content-Type: application/json
+
+{
+    "username" : "test",
+    "password" : "exemple"
+}

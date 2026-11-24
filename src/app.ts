@@ -32,7 +32,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-app.use((req, res, next) => {
+
+app.get('/', async (req: Request, res: Response) => {
+    res.json({
+        message: "hi"
+    });
+});
+
+
+app.use((req: Request, res: Response, next) => {
+    if (req.method === "POST" && !req.is("application/json")) {
+        return res.status(415).json({
+            error: "Unsupported Media Type",
+            message: "Content-Type doit être application/json",
+        });
+    }
     next();
 });
 
@@ -41,14 +55,6 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 
-app.get('/', async (req: Request, res: Response) => {
-    res.json({
-        message: "hi"
-    });
-});
-
-// Serve static assets (CSS, client JS, images)
-app.use(express.static(join(__dirname, '../public')));
 
 //==================================
 //          Limiter

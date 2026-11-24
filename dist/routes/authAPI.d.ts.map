@@ -1,1 +1,1 @@
-{"version":3,"file":"authAPI.d.ts","sourceRoot":"","sources":["../../src/routes/authAPI.ts"],"names":[],"mappings":"AAGA,QAAA,MAAM,KAAK,4CAAW,CAAC;eAoCR,KAAK"}
+{"version":3,"file":"authAPI.d.ts","sourceRoot":"","sources":["../../src/routes/authAPI.ts"],"names":[],"mappings":"AAKA,QAAA,MAAM,KAAK,4CAAW,CAAC;eAwDR,KAAK"}

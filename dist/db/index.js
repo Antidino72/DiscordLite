@@ -18,7 +18,7 @@ export const initDb = async () => {
                 id SERIAL PRIMARY KEY,
                 username TEXT NOT NULL,
                 password_hash TEXT NOT NULL,
-                is_ginger BOOL DEFAULT TRUE,
+                is_ginger BOOL NOT NULL DEFAULT TRUE,
                 image_url TEXT,
                 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 deleted_at TIMESTAMP NULL,
@@ -38,7 +38,7 @@ export const initDb = async () => {
         `);
     }
     catch (err) {
-        console.error("❌ Erreur lors de l'initialisation de la base de données :", err);
+        console.error("Erreur lors de l'initialisation de la base de données :", err);
     }
 };
 //# sourceMappingURL=index.js.map

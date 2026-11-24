@@ -10,6 +10,11 @@ export class Queries {
         const res = await pool.query(query, [username, password, final_image]);
         return res.rows[0];
     }
+    async getUserByUsername(username) {
+        const query = 'SELECT id, username, password_hash FROM users WHERE username = $1 LIMIT 1';
+        const res = await pool.query(query, [username]);
+        return res.rows[0];
+    }
     async insertMessage(userId, username, userImage, content) {
         const query = 'INSERT INTO messages (user_id, username, user_image, content) VALUES ($1, $2, $3, $4) RETURNING *';
         const res = await pool.query(query, [userId, username, userImage, content]);
