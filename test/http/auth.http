@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:3000/api/
-
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYmZmNWUxNy1lYTZjLTRhMmMtYjI5Ny0xNGI0NzNkMDQ0YWQiLCJpYXQiOjE3OTU1MzQ4MjgsImV4cCI6MTc5NjEzOTYyOH0.JJuZO10AsUAPWtcWwYnE4QbTqP_G_CRYV_hMqvaSmwU
 ### Test connexion
 GET http://localhost:3000
 
@@ -58,8 +58,8 @@ Content-Type: application/json
 
 ### Me sans token (doit renvoyer 401)
 GET {{baseUrl}}me
+Authorization: Bearer {{token}}
 
 ### Me avec token
 # Remplace TOKEN par la valeur reçue au login
 GET {{baseUrl}}me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYmZmNWUxNy1lYTZjLTRhMmMtYjI5Ny0xNGI0NzNkMDQ0YWQiLCJpYXQiOjE3OTU1MzQ4MjgsImV4cCI6MTc5NjEzOTYyOH0.JJuZO10AsUAPWtcWwYnE4QbTqP_G_CRYV_hMqvaSmwU

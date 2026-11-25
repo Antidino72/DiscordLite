@@ -1,11 +1,6 @@
 import * as authService from "../services/authService.js";
 import { UsernameTakenError, InvalidCredentialsError } from "../services/authService.js";
-function badRequest(res) {
-    return res.status(400).json({
-        error: "BAD Parameters",
-        message: "Invalid request parameters",
-    });
-}
+import { badRequest } from "../services/ErrorService.js";
 export async function signup(req, res) {
     const { username, password, image } = req.body ?? {};
     if (!username || !password)
@@ -18,7 +13,7 @@ export async function signup(req, res) {
         if (err instanceof UsernameTakenError) {
             return res.status(409).json({ message: "A username must be unique" });
         }
-        throw err; // Attrapé par le gestionnaire d'erreurs global
+        throw err;
     }
 }
 export async function login(req, res) {

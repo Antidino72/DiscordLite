@@ -1,13 +1,9 @@
 import type { Request, Response } from "express";
 import * as authService from "../services/authService.js";
 import { UsernameTakenError, InvalidCredentialsError } from "../services/authService.js";
+import { badRequest } from "../services/ErrorService.js";
 
-function badRequest(res: Response) {
-    return res.status(400).json({
-        error: "BAD Parameters",
-        message: "Invalid request parameters",
-    });
-}
+
 
 export async function signup(req: Request, res: Response) {
     const { username, password, image } = req.body ?? {};
@@ -20,7 +16,7 @@ export async function signup(req: Request, res: Response) {
         if (err instanceof UsernameTakenError) {
             return res.status(409).json({ message: "A username must be unique" });
         }
-        throw err; // Attrapé par le gestionnaire d'erreurs global
+        throw err; 
     }
 }
 

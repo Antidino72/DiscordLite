@@ -1,9 +1,9 @@
 export interface POST {
-    id: number;
-    user_id: number | null;
-    username: string | null;
-    user_image: string | null;
+    id: string;
+    user_id: string;
     content: string;
-    created_at: string | null;
+    created_at: string;
+    deleted_at: string;
+    updated_at: string;
 }
 //# sourceMappingURL=post.d.ts.map

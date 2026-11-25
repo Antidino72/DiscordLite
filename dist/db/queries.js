@@ -15,9 +15,9 @@ export class Queries {
         const res = await pool.query(query, [username]);
         return res.rows[0];
     }
-    async insertMessage(userId, username, userImage, content) {
-        const query = 'INSERT INTO messages (user_id, username, user_image, content) VALUES ($1, $2, $3, $4) RETURNING *';
-        const res = await pool.query(query, [userId, username, userImage, content]);
+    async addPost(user_id, content) {
+        const query = 'INSERT INTO posts (user_id, content) VALUES ($1, $2) RETURNING *';
+        const res = await pool.query(query, [user_id, content]);
         return res.rows[0];
     }
     async getUserByPublicId(publicId) {

@@ -48,7 +48,9 @@ app.use('/api/', limiter);
 //          Route
 //===================================
 import authRoute from './routes/authAPI.js';
-import chatRoute from "./routes/ChatAPI.js";
+import chatRoute from "./routes/postAPI.js";
+import { requireAuth } from './middlewares/auth.js';
 app.use('/api', authRoute);
-app.use('/api', chatRoute);
+app.use('/api', requireAuth);
+app.use('/api/posts', chatRoute);
 //# sourceMappingURL=app.js.map

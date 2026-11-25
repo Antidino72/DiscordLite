@@ -1,0 +1,13 @@
+@baseUrl = http://localhost:3000/api/posts/
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYmZmNWUxNy1lYTZjLTRhMmMtYjI5Ny0xNGI0NzNkMDQ0YWQiLCJpYXQiOjE3OTU1MzQ4MjgsImV4cCI6MTc5NjEzOTYyOH0.JJuZO10AsUAPWtcWwYnE4QbTqP_G_CRYV_hMqvaSmwU
+
+
+### Add Post correct
+POST {{baseUrl}}add
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "content" : "Hello, World ! from vscode"
+}
+GET {{baseUrl}}get/all&limit= 10

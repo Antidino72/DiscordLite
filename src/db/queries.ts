@@ -1,6 +1,9 @@
+import type { POST } from "../types/post.js";
 import type { User } from "../types/user.js";
 import {pool} from "./index.js"
 export class Queries{
+
+    // authentifiaction 
     async insertUser(username : string, password: string, image: string |null) :  Promise<User>{
         
         if (!image) {
@@ -18,41 +21,28 @@ export class Queries{
         const res = await pool.query(query, [username]);
         return res.rows[0];
     }
-    async insertMessage(userId: any, username: any, userImage: any, content: any) : Promise<string>{
-        const query = 'INSERT INTO messages (user_id, username, user_image, content) VALUES ($1, $2, $3, $4) RETURNING *';
-        const res = await pool.query(query, [userId, username, userImage, content]);
-        return res.rows[0];
-    }
+
     async getUserByPublicId(publicId: string): Promise<User | undefined> {
     const query = 'SELECT id, public_id, username, image_url FROM users WHERE public_id = $1 LIMIT 1';
     const res = await pool.query(query, [publicId]);
     return res.rows[0];
 }
-    async getMessagesBeforeID(id: any, limit: any): Promise<any[]> {
-        const query = 'SELECT * FROM messages WHERE id < $1 ORDER BY id  LIMIT $2';
-        const res = await pool.query(query, [id, limit]);
-        return res.rows;
-    }   
 
-    async getMessagesAfterID (id: any, limit: any) : Promise<any[]>  {
-        const query = 'SELECT * FROM messages WHERE id > $1 ORDER BY id  LIMIT $2';
-        const res = await pool.query(query, [id, limit]);
-        return res.rows;
-    }
-    async getMessages(limit: any) : Promise<any[]>{
-        const query = 'SELECT * FROM messages ORDER BY id LIMIT $1';
-        const res = await pool.query(query, [limit]);
-        return res.rows;
-    }
-    async updateUserStatus(state: any) : Promise<any[]>{
-
-        const query = 'UPDATE users SET status = $2 WHERE id = $1';
-        const res  = await pool.query(query,state)
+    // post 
+    async addPost(user_id : string , content : string) : Promise<POST>{
+        const query = 'INSERT INTO posts (user_id, content) VALUES ($1, $2) RETURNING *';
+        const res = await pool.query(query, [user_id, content]);
         return res.rows[0];
     }
-    async getUserList(): Promise<any[]>{
-        const query = 'SELECT username,status FROM users'
-        const res = await pool.query(query)
+    async getPostsByUUID(post_id : string) : Promise<POST>{
+        const query = "SELECT * FROM posts WHERE id = ?";
+        const res = await pool.query(query,[post_id])
+        return res.rows[0]
+    }
+    async getPosts(limit?: number): Promise<POST[]> {
+        const safeLimit = limit && limit > 0 ? Math.min(limit, 100) : 10;
+        const query = "SELECT * FROM posts WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT $1";
+        const res = await pool.query(query, [safeLimit]);
         return res.rows;
     }
 }

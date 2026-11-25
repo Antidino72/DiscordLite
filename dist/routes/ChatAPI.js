@@ -36,8 +36,8 @@ route.get('/image/:id', async (req, res) => {
             return res.status(404).send(`Not Found : ${imageId}`);
     }
 });
-route.get("/user", async (req, res) => {
-    res.status(200).json(await queries.getUserList());
+route.get("/users", async (req, res) => {
+    res.status(200).json({ ok: "true" });
 });
 export default route;
 //# sourceMappingURL=ChatAPI.js.map

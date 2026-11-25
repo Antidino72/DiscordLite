@@ -32,13 +32,13 @@ export const initDb = async () => {
 
   // Table MESSAGES
   await pool.query(`
-            CREATE TABLE IF NOT EXISTS messages (
-                id SERIAL PRIMARY KEY,
-                user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
-                username TEXT,
-                user_image TEXT,
+            CREATE TABLE IF NOT EXISTS posts (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                user_id UUID REFERENCES users(public_id) ON DELETE CASCADE,
                 content TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+                deleted_at TIMESTAMPTZ NULL,
+                updated_at TIMESTAMPTZ NULL
             );
         `);
  } catch (err) {
